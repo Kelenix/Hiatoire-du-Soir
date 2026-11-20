@@ -1,0 +1,8 @@
+{
+  "SUPABASE_URL": "URL du projet Supabase (dev local émulateur Android : http://10.0.2.2:59321)",
+  "SUPABASE_PUBLISHABLE_KEY": "clé publique sb_publishable_… (npx supabase status)",
+  "SUPPORT_EMAIL": "adresse du support (vide = bouton masqué)",
+  "LEGAL_URL": "page des informations légales (vide = entrée masquée)",
+  "REVENUECAT_ANDROID_KEY": "clé publique RevenueCat Android goog_… (vide = offres indisponibles)",
+  "REVENUECAT_IOS_KEY": "clé publique RevenueCat iOS appl_…"
+}
