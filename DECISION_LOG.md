@@ -6,6 +6,77 @@
 
 ---
 
+## ADR-041 — Mise en ligne Android : comptes, pages légales et déclarations Play
+
+- **Date** : 21/11/2026 · **Statut** : Accepté · **Décideur** : utilisateur (comptes, éditeur, e-mail
+  public), Claude (hébergement, déclarations)
+- **Décision** :
+  - Google Cloud et connexion Google sur **lionelkelenix@gmail.com** (projet `histoires-du-soir`) ;
+    Play Console sur le compte développeur **Kelenix Tech** (lionel@kelenix.com, compte personnel).
+  - Éditeur public : Lionel Djouaka Kelefack ; contact : lionelkelenix@gmail.com.
+  - Pages légales sur **GitHub Pages** (`Kelenix/histoires-du-soir-site`, sources `site/`) : gratuit,
+    HTTPS, sans nom de domaine ; domaine `kelenix.github.io` autorisé dans l'écran de connexion Google.
+  - Clé d'envoi Android générée sur ce PC, signature finale par Google (Play App Signing).
+  - Déclarations Play : sans publicité ; classification IARC PEGI 3 (contenu IA, achats intégrés) ;
+    public mixte (parents et enfants de 3 à 8 ans, programme Familles) ; données collectées sans
+    partage, détail dans `docs/store/fiche-play-store.md`.
+  - Catégorie : Livres et références. Visuels IA (mascotte) non étiquetés : illustrations, pas de
+    contenu réaliste trompeur.
+- **Alternatives écartées** : Google Sites (domaine non autorisable pour l'écran de connexion) ;
+  fonction Supabase (HTML non servi) ; VPS sans domaine (pas de HTTPS).
+- **Impact** : légal / métier (fort) — relecture juridique des pages recommandée.
+
+---
+
+## ADR-040 — Code par e-mail masqué en production sans service d'envoi
+
+- **Date** : 21/11/2026 · **Statut** : Accepté, précise ADR-038 · **Décideur** : Claude
+- **Contexte** : Sans SMTP, Supabase n'envoie les codes qu'aux membres de l'équipe : un parent ne
+  recevrait jamais son code.
+- **Décision** : `EMAIL_CODE_ENABLED=false` dans `env/prod.json` ; Google reste la seule connexion en
+  production Android. Réactiver dès qu'un service d'envoi est branché.
+- **Impact** : produit (faible).
+
+---
+
+## ADR-039 — Voix du téléphone réglée pour le coucher
+
+- **Date** : 20/11/2026 · **Statut** : Accepté, précise ADR-013 · **Décideur** : Claude (mobile-architect), à la suite de l'écoute de l'utilisateur
+- **Contexte** : Essai sur téléphone : lecture trop rapide, pas de pause entre les paragraphes, pas
+  d'émotion.
+- **Décision** :
+  - Vitesse 0,38 (0,32 en « lente »), au lieu de 0,45, où 0,5 est la vitesse normale du téléphone.
+  - Ton légèrement plus grave (0,95).
+  - Meilleure voix française installée et utilisable hors connexion (France d'abord, puis la plus
+    haute qualité).
+  - Titre et paragraphes synthétisés à part, puis réassemblés avec 0,9 s de silence entre eux.
+- **Limite** : une voix de téléphone ne porte ni émotion ni intention. Pour une lecture vivante, il
+  faut les voix neuronales Google (Premium ou Pack Voix, ADR-035). La gamme la plus expressive
+  (Chirp 3 HD) coûte environ 7 fois WaveNet : à décider après le test d'écoute, clé Google requise.
+- **Impact** : produit (moyen).
+
+---
+
+## ADR-038 — Connexion des parents avec Google, sur Android d'abord
+
+- **Date** : 20/11/2026 · **Statut** : Accepté, précise ADR-010 et ADR-026 · **Décideur** : utilisateur
+  (pas de nom de domaine, donc pas d'envoi d'e-mails), sur recommandation de Claude
+- **Contexte** : Le code par e-mail exige un service d'envoi (SMTP) et, en pratique, un nom de domaine.
+- **Décision** :
+  - Connexion native : le parent choisit son compte Google dans la fenêtre du téléphone
+    (`google_sign_in`) ; Supabase vérifie le jeton d'identité.
+  - Le compte Google est **rattaché à la session anonyme** (`linkIdentityWithIdToken`) : même
+    famille, mêmes histoires. S'il est déjà lié à une famille (2ᵉ appareil), on s'y connecte.
+  - Bouton masqué sur iPhone tant que « Se connecter avec Apple » n'existe pas (règle 4.8 d'Apple),
+    et partout tant que l'ID client n'est pas configuré.
+  - Le code par e-mail reste en second choix ; il ne fonctionne en production qu'avec un service
+    d'envoi.
+- **Alternatives écartées** : SMTP Gmail (adresse personnelle visible des parents) ; Brevo sans
+  domaine (codes souvent en indésirables).
+- **Impact** : produit / légal (moyen).
+
+---
+
 ## ADR-037 — Stratégie de test de la phase 5
 
 - **Date** : 20/11/2026 · **Statut** : Accepté · **Décideur** : Claude (qa-engineer)

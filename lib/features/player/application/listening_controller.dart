@@ -72,10 +72,10 @@ class ListeningController extends AutoDisposeFamilyNotifier<ListeningStatus, Sto
       if (voice != null) {
         source = AudioSource.uri(await repository.premiumAudio(voice.id, storyId: arg.id), tag: tag);
       } else if (await repository.hasFrenchVoice()) {
-        final path = await repository.standardAudioFile(
-          arg.spokenText,
-          rate: isSlowVoice ? ListeningRepository.slowRate : ListeningRepository.defaultRate,
-        );
+        final path = await repository.standardAudioFile([
+          arg.title,
+          ...arg.paragraphs,
+        ], rate: isSlowVoice ? ListeningRepository.slowRate : ListeningRepository.defaultRate);
         source = AudioSource.file(path, tag: tag);
       } else {
         _set(ListeningStatus.noVoice);

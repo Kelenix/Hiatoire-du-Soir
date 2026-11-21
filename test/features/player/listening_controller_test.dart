@@ -29,7 +29,7 @@ class _FakeListening implements ListeningRepository {
   }
 
   @override
-  Future<String> standardAudioFile(String text, {double rate = ListeningRepository.defaultRate}) async {
+  Future<String> standardAudioFile(List<String> passages, {double rate = ListeningRepository.defaultRate}) async {
     steps.add('synthèse');
     return '/tmp/histoire.wav';
   }

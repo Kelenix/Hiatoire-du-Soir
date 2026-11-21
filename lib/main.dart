@@ -11,7 +11,21 @@ import 'core/theme/app_colors.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Indépendantes les unes des autres : lancées ensemble pour raccourcir le démarrage (docs/performance.md).
+  // Le fond nuit passe sous les barres du système (heure en haut, navigation en bas) : sans cela,
+  // Android 14 et antérieurs les peignent en noir.
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarContrastEnforced: false,
+    ),
+  );
   await Future.wait([
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge),
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
     // Écoute écran verrouillé, avec la notification de lecture du système (US-10).
     JustAudioBackground.init(

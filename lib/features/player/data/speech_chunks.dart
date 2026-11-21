@@ -23,10 +23,11 @@ List<String> splitForSpeech(String text, {int maxLength = 3500}) {
   return chunks;
 }
 
-/// Assemble des fichiers WAV de même format (même voix, même réglage) en un seul fichier.
-Uint8List concatenateWav(List<Uint8List> files) {
+/// Assemble des fichiers WAV de même format (même voix, même réglage) en un seul fichier, avec un
+/// silence de [pause] entre deux fichiers : la fin d'un paragraphe s'entend.
+Uint8List concatenateWav(List<Uint8List> files, {Duration pause = Duration.zero}) {
   Uint8List? format;
-  final samples = BytesBuilder(copy: false);
+  final bodies = <Uint8List>[];
   for (final file in files) {
     final view = ByteData.sublistView(file);
     var offset = 12; // « RIFF », taille, « WAVE »
@@ -35,14 +36,26 @@ Uint8List concatenateWav(List<Uint8List> files) {
       final size = view.getUint32(offset + 4, Endian.little);
       final body = Uint8List.sublistView(file, offset + 8, min(offset + 8 + size, file.length));
       if (id == 'fmt ') format ??= body;
-      if (id == 'data') samples.add(body);
+      if (id == 'data') bodies.add(body);
       offset += 8 + size + size % 2;
     }
+  }
+  final formatView = ByteData.sublistView(format!);
+  final blockAlign = formatView.getUint16(12, Endian.little);
+  final silenceLength =
+      formatView.getUint32(8, Endian.little) * pause.inMilliseconds ~/ 1000 ~/ blockAlign * blockAlign;
+  // En PCM 8 bits, le silence vaut 128 ; au-delà, 0.
+  final silence = Uint8List(silenceLength)
+    ..fillRange(0, silenceLength, formatView.getUint16(14, Endian.little) == 8 ? 128 : 0);
+  final samples = BytesBuilder(copy: false);
+  for (final (index, body) in bodies.indexed) {
+    if (index > 0) samples.add(silence);
+    samples.add(body);
   }
   final data = samples.takeBytes();
   final header = ByteData(20)
     ..setUint32(0, 0x46464952, Endian.little) // RIFF
-    ..setUint32(4, 4 + 8 + format!.length + 8 + data.length, Endian.little)
+    ..setUint32(4, 4 + 8 + format.length + 8 + data.length, Endian.little)
     ..setUint32(8, 0x45564157, Endian.little) // WAVE
     ..setUint32(12, 0x20746d66, Endian.little) // « fmt  »
     ..setUint32(16, format.length, Endian.little);

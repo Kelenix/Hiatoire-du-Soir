@@ -12,4 +12,12 @@ abstract final class AppConfig {
   /// Clés publiques RevenueCat (achats intégrés, ADR-009) ; vides tant que le compte n'existe pas.
   static const revenueCatAndroidKey = String.fromEnvironment('REVENUECAT_ANDROID_KEY');
   static const revenueCatIosKey = String.fromEnvironment('REVENUECAT_IOS_KEY');
+
+  /// Identifiant OAuth « application Web » de Google (public), pour la connexion Google du parent
+  /// (ADR-038) ; vide tant qu'il n'existe pas, et le bouton reste alors masqué.
+  static const googleWebClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
+
+  /// Connexion par code e-mail : à `false` tant que la production n'a pas de service d'envoi
+  /// (SMTP), car le code n'arriverait jamais (ADR-040).
+  static const emailCodeEnabled = bool.fromEnvironment('EMAIL_CODE_ENABLED', defaultValue: true);
 }

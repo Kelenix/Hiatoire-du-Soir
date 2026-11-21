@@ -82,23 +82,47 @@
 - [ ] **Clé Anthropic de production** (conseillé) : une clé distincte avec son propre plafond de
       dépense. Aujourd'hui la production utilise la même clé que le développement ; pour la
       changer, la mettre dans `supabase/functions/.env.production`, puis me prévenir.
-- [ ] **Sign in with Apple** (Service ID, clé) et **Google Sign-In** (identifiants Android et iOS) :
-      les boutons Apple et Google du compte parent seront ajoutés dès réception (ADR-026).
-- [ ] **Adresse e-mail de support** : à mettre dans `SUPPORT_EMAIL` (`env/*.json`) ; le bouton
-      « Écrire au support » apparaît alors dans l'Espace Parents.
+- [x] **Connexion Google des parents** (ADR-038) : configurée le 21/11/2026 sur lionelkelenix@gmail.com
+      (projet Cloud `histoires-du-soir`, écran de connexion publié, clients Web et Android debug + clé
+      d'envoi) et activée dans Supabase (local et production). Reste : client Android avec l'empreinte
+      de la clé de signature Play, dès que Google l'a générée (je m'en charge).
+- [ ] **Sign in with Apple** (Service ID, clé) : obligatoire sur iPhone dès qu'on propose Google ;
+      le bouton Google reste masqué sur iPhone jusque-là (ADR-038).
+- [x] **Adresse e-mail de support** : lionelkelenix@gmail.com (`SUPPORT_EMAIL`), le 21/11/2026.
 - [x] Projet Supabase de production : « Confirm email » actif (vérifié le 20/11/2026, ADR-025).
-- [ ] **Informations de l'éditeur** (nom ou société, adresse) pour mentions légales, politique de
-      confidentialité et conditions de vente ; relecture juridique recommandée (données d'enfants).
-- [ ] **URL publique** pour la politique de confidentialité et le support (exigée par les stores) :
-      à mettre dans `LEGAL_URL` (`env/*.json`) ; l'entrée « Informations légales » apparaît alors.
+- [x] **Éditeur** : Lionel Djouaka Kelefack, contact lionelkelenix@gmail.com (21/11/2026). Reste
+      conseillé : relecture juridique des pages légales (données d'enfants, conditions de vente).
+- [x] **URL publique** : https://kelenix.github.io/histoires-du-soir-site/ (GitHub Pages, dépôt public
+      `Kelenix/histoires-du-soir-site`, sources dans `site/`), dans `LEGAL_URL` (ADR-041).
 - [ ] **Anti-abus du quota gratuit (décision)** : activer l'attestation de l'appareil (Play
       Integrity sur Android, App Attest sur iPhone, gratuites) pour que les histoires gratuites ne
       puissent pas être obtenues en recréant des comptes par script (risque R15, ADR-036). Je
       recommande oui ; la configuration se fait dans la Play Console et l'App Store Connect.
-- [ ] **Politique de confidentialité** : y nommer les sous-traitants (Supabase, Anthropic, Google
-      Cloud Text-to-Speech, RevenueCat, stores) ; la liste et les données sont dans `docs/security.md` §3.
+- [x] **Politique de confidentialité** publiée avec les sous-traitants (`site/confidentialite.html`).
 - [ ] **Un téléphone Android d'entrée de gamme** (le tien ou un prêt) pour mesurer démarrage et
       fluidité en conditions réelles pendant le test interne (`docs/performance.md`).
-- [ ] **Captures d'écran des stores** : je les produis depuis l'app ; tu valides.
-- [ ] **Clé de signature Android** : je la génère, tu la sauvegardes en lieu sûr (sa perte empêche
-      toute mise à jour de l'app).
+- [x] **Captures d'écran des stores** : 6 captures, icône et bannière dans `docs/store/visuels/`,
+      envoyées sur la fiche Play le 21/11/2026 ; à valider de ton côté.
+- [ ] **Sauvegarder la clé d'envoi Android** (générée le 21/11/2026) : copier
+      `android/upload-keystore.jks` et `android/key.properties` (mot de passe) dans un coffre (gestionnaire
+      de mots de passe, clé USB). Avec la signature Play, une clé perdue se remplace via le support Google,
+      mais cela prend des jours.
+
+## Publication Google Play (phase 6, en cours)
+
+Compte développeur : **Kelenix Tech** (lionel@kelenix.com, compte personnel), app « Histoires du Soir »
+(`fr.histoiresdusoir.app`) créée le 21/11/2026. Fait par moi : fiche, catégorie, contact, politique de
+confidentialité, publicités (non), classification (PEGI 3), sécurité des données (brouillon).
+
+- [ ] **Glisser le paquet** `build/app/outputs/bundle/release/app-release.aab` dans la release de test
+      interne ouverte dans Chrome (55 Mo : trop gros pour mon outil d'envoi, limité à 10 Mo).
+- [ ] **Profil de paiement (marchand)** du compte Kelenix, s'il n'existe pas : coordonnées bancaires,
+      obligatoire pour vendre l'abonnement et les packs.
+- [ ] **Statut de commerçant (UE)** avant février 2027 : bannière « Dichiara il tuo stato di
+      commerciante ». Si tu vends (abonnements), tu es commerçant : Google affiche alors adresse,
+      téléphone et e-mail publics. Décision et saisie personnelles.
+- [ ] **RevenueCat** : compte (créé par toi, mot de passe), puis j'y fais la configuration ; la clé
+      JSON du compte de service Google Play et le secret du webhook se collent par toi.
+- [ ] **Test fermé obligatoire** (compte personnel) : 12 testeurs inscrits pendant 14 jours d'affilée
+      avant de demander la production. Tes listes existantes (« New Update Test », 46 ; « Test 5 »,
+      43…) peuvent servir ; dis-moi laquelle.

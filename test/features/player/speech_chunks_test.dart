@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:histoires_du_soir/features/player/data/listening_repository.dart';
 import 'package:histoires_du_soir/features/player/data/speech_chunks.dart';
 
 /// WAV PCM 16 bits mono minimal portant [samples].
@@ -64,5 +65,31 @@ void main() {
     expect(String.fromCharCodes(wav, 36, 40), 'data');
     expect(view.getUint32(40, Endian.little), 6);
     expect(wav.sublist(44), [1, 2, 3, 4, 5, 6]);
+  });
+
+  test('un silence sépare les paragraphes réassemblés', () {
+    final wav = concatenateWav([
+      _wav([1, 2]),
+      _wav([3, 4]),
+    ], pause: const Duration(milliseconds: 100));
+
+    // 44 100 octets par seconde : 4 410 octets de silence en 100 ms.
+    expect(wav.length, 44 + 2 + 4410 + 2);
+    expect(wav.sublist(44, 46), [1, 2]);
+    expect(wav.sublist(46, 46 + 4410).every((byte) => byte == 0), isTrue);
+    expect(wav.sublist(46 + 4410), [3, 4]);
+  });
+
+  test('la meilleure voix française installée est choisie (France, qualité, hors connexion)', () {
+    final voice = bestFrenchVoice([
+      {'name': 'en-us-x-iol-local', 'locale': 'en-US', 'quality': 'very high', 'network_required': '0'},
+      {'name': 'fr-fr-x-frc-network', 'locale': 'fr-FR', 'quality': 'very high', 'network_required': '1'},
+      {'name': 'fr-ca-x-cab-local', 'locale': 'fr-CA', 'quality': 'very high', 'network_required': '0'},
+      {'name': 'fr-fr-x-frb-local', 'locale': 'fr-FR', 'quality': 'normal', 'network_required': '0'},
+      {'name': 'fr-fr-x-frd-local', 'locale': 'fr-FR', 'quality': 'high', 'network_required': '0'},
+    ]);
+
+    expect(voice, {'name': 'fr-fr-x-frd-local', 'locale': 'fr-FR'});
+    expect(bestFrenchVoice(const []), isNull);
   });
 }

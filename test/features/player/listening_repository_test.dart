@@ -25,13 +25,17 @@ void main() {
     final tts = _MockTts();
     when(() => tts.setLanguage(any())).thenAnswer((_) async => 1);
     when(() => tts.setSpeechRate(any())).thenAnswer((_) async => 1);
+    when(() => tts.setPitch(any())).thenAnswer((_) async => 1);
+    when(() => tts.getVoices).thenAnswer((_) async => <Object?>[]);
     when(() => tts.awaitSynthCompletion(any())).thenAnswer((_) async => 1);
     when(() => tts.synthesizeToFile(any(), any(), any())).thenAnswer((_) => Completer<dynamic>().future);
     when(() => tts.stop()).thenAnswer((_) async => 1);
 
     Object? failure;
     unawaited(
-      ListeningRepository(_MockSupabase(), tts).standardAudioFile('Il était une fois…').catchError((Object error) {
+      ListeningRepository(_MockSupabase(), tts).standardAudioFile(['Le renard', 'Il était une fois…']).catchError((
+        Object error,
+      ) {
         failure = error;
         return '';
       }),

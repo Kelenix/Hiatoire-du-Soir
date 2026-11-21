@@ -32,9 +32,6 @@ class Story {
   final List<String> paragraphs;
   final int listensCount;
   final bool isFavorite;
-
-  /// Texte lu à voix haute : le titre, puis l'histoire.
-  String get spokenText => '$title.\n\n${paragraphs.join('\n\n')}';
 }
 
 /// Le texte stocké ne contient jamais le prénom, seulement ce marqueur (ADR-017).

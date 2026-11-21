@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config.dart';
 import '../../../core/failure.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/night_scaffold.dart';
 import '../../../shared/widgets/pill_buttons.dart';
+import '../../session/data/google_identity.dart';
 import '../../session/data/session_repository.dart';
 
 /// Code envoyé, en attente de saisie. Il survit à la fermeture de l'Espace Parents quand le parent
@@ -140,6 +142,13 @@ class _EmailSignInState extends ConsumerState<_EmailSignIn> {
     });
   }
 
+  Future<void> _signInWithGoogle() {
+    final pending = ref.read(pendingEmailCodeProvider.notifier);
+    return _busy(() async {
+      if (await ref.read(sessionRepositoryProvider).signInWithGoogle()) pending.state = null;
+    });
+  }
+
   void _changeEmail() {
     ref.read(pendingEmailCodeProvider.notifier).state = null;
     setState(() {
@@ -166,45 +175,61 @@ class _EmailSignInState extends ConsumerState<_EmailSignIn> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final hasCodeBeenSent = _purpose != null;
+    final canUseGoogle = ref.watch(googleIdentityProvider).isAvailable;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Créer un compte ou se connecter', style: textTheme.titleMedium),
         const SizedBox(height: 4),
         Text(
-          'Un compte garde vos histoires et vos achats, et les retrouve sur un autre appareil. '
-          'Vous recevrez un code à 6 chiffres par e-mail.',
+          'Un compte garde vos histoires et vos achats, et les retrouve sur un autre appareil.',
           style: textTheme.bodySmall,
         ),
         const SizedBox(height: 20),
-        TextField(
-          controller: _email,
-          enabled: !hasCodeBeenSent,
-          keyboardType: TextInputType.emailAddress,
-          autofillHints: const [AutofillHints.email],
-          decoration: const InputDecoration(labelText: 'Adresse e-mail'),
-        ),
-        if (hasCodeBeenSent) ...[
-          const SizedBox(height: 16),
-          TextField(
-            controller: _code,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            decoration: const InputDecoration(labelText: 'Code reçu par e-mail'),
+        if (canUseGoogle) ...[
+          OutlinePillButton(label: 'Continuer avec Google', onPressed: _isBusy ? null : _signInWithGoogle),
+          const SizedBox(height: 24),
+        ],
+        if (!AppConfig.emailCodeEnabled) ...[
+          if (!canUseGoogle) Text('La création de compte arrive bientôt sur cet appareil.', style: textTheme.bodySmall),
+          if (_error != null) Text(_error!, style: textTheme.bodySmall!.copyWith(color: AppColors.error)),
+        ] else ...[
+          Text(
+            canUseGoogle
+                ? 'Ou avec un code à 6 chiffres reçu par e-mail :'
+                : 'Vous recevrez un code à 6 chiffres par e-mail.',
+            style: textTheme.bodySmall,
           ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _email,
+            enabled: !hasCodeBeenSent,
+            keyboardType: TextInputType.emailAddress,
+            autofillHints: const [AutofillHints.email],
+            decoration: const InputDecoration(labelText: 'Adresse e-mail'),
+          ),
+          if (hasCodeBeenSent) ...[
+            const SizedBox(height: 16),
+            TextField(
+              controller: _code,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              autofillHints: const [AutofillHints.oneTimeCode],
+              decoration: const InputDecoration(labelText: 'Code reçu par e-mail'),
+            ),
+          ],
+          if (_error != null) ...[
+            const SizedBox(height: 8),
+            Text(_error!, style: textTheme.bodySmall!.copyWith(color: AppColors.error)),
+          ],
+          const SizedBox(height: 20),
+          MagicButton(
+            label: hasCodeBeenSent ? 'Valider le code' : 'Recevoir un code',
+            onPressed: _isBusy ? null : (hasCodeBeenSent ? _verify : _sendCode),
+          ),
+          if (hasCodeBeenSent)
+            TextButton(onPressed: _isBusy ? null : _changeEmail, child: const Text('Changer d’adresse')),
         ],
-        if (_error != null) ...[
-          const SizedBox(height: 8),
-          Text(_error!, style: textTheme.bodySmall!.copyWith(color: AppColors.error)),
-        ],
-        const SizedBox(height: 20),
-        MagicButton(
-          label: hasCodeBeenSent ? 'Valider le code' : 'Recevoir un code',
-          onPressed: _isBusy ? null : (hasCodeBeenSent ? _verify : _sendCode),
-        ),
-        if (hasCodeBeenSent)
-          TextButton(onPressed: _isBusy ? null : _changeEmail, child: const Text('Changer d’adresse')),
       ],
     );
   }

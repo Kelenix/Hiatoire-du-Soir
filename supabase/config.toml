@@ -182,7 +182,7 @@ enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
 enable_anonymous_sign_ins = true
 # Allow/disallow testing manual linking of accounts
-enable_manual_linking = false
+enable_manual_linking = true
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
 minimum_password_length = 6
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
@@ -353,6 +353,14 @@ url = ""
 skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
 email_optional = false
+
+# Connexion Google des parents (ADR-038) : l'app envoie un jeton d'identité émis pour le client Web ;
+# les clients Android (clé de debug, clé d'envoi, clé Play) sont listés après lui. Identifiants publics.
+[auth.external.google]
+enabled = true
+client_id = "1015890207667-59fbqdrjjhogkgqbgj6ljl83aahbnud7.apps.googleusercontent.com,1015890207667-oflcvvcf8hhn7ifbnmbra83cu9bmce6d.apps.googleusercontent.com,1015890207667-1v0vh9puou81euc830qqmjjgun3j5kje.apps.googleusercontent.com"
+secret = ""
+skip_nonce_check = false
 
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:histoires_du_soir/features/parental_gate/application/parental_gate.dart';
+import 'package:histoires_du_soir/features/session/data/google_identity.dart';
 import 'package:histoires_du_soir/features/session/data/session_repository.dart';
 import 'package:histoires_du_soir/features/stories/data/story_repository.dart';
 
@@ -13,8 +14,21 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 class _FakeSession extends Fake implements SessionRepository {
+  var googleSignIns = 0;
+
   @override
   Future<EmailCodePurpose> sendEmailCode(String email) async => EmailCodePurpose.linkThisDevice;
+
+  @override
+  Future<bool> signInWithGoogle() async {
+    googleSignIns++;
+    return true;
+  }
+}
+
+class _GoogleReady extends Fake implements GoogleIdentity {
+  @override
+  bool get isAvailable => true;
 }
 
 void main() {
@@ -66,6 +80,34 @@ void main() {
 
     expect(find.text('Valider le code'), findsOneWidget);
     expect(find.text('parent@exemple.fr'), findsOneWidget);
+  });
+
+  testWidgets('compte : « Continuer avec Google » quand Google est configuré (ADR-038)', (tester) async {
+    final session = _FakeSession();
+    final container = await pumpApp(
+      tester,
+      overrides: [
+        sessionRepositoryProvider.overrideWithValue(session),
+        googleIdentityProvider.overrideWithValue(_GoogleReady()),
+      ],
+    );
+    container.read(parentalGateProvider.notifier).unlock();
+    await goTo(tester, '/parents/compte');
+
+    await tester.tap(find.text('Continuer avec Google'));
+    await _settle(tester);
+
+    expect(session.googleSignIns, 1);
+    expect(find.text('Ou avec un code à 6 chiffres reçu par e-mail :'), findsOneWidget);
+  });
+
+  testWidgets('compte : sans configuration Google, le code e-mail seul', (tester) async {
+    final container = await pumpApp(tester);
+    container.read(parentalGateProvider.notifier).unlock();
+    await goTo(tester, '/parents/compte');
+
+    expect(find.text('Continuer avec Google'), findsNothing);
+    expect(find.text('Vous recevrez un code à 6 chiffres par e-mail.'), findsOneWidget);
   });
 
   testWidgets('accueil Parents : sections disponibles, aucune en double (US-17)', (tester) async {

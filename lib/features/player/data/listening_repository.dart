@@ -17,9 +17,16 @@ class ListeningRepository {
 
   static const _language = 'fr-FR';
 
-  /// Vitesse par défaut, un peu posée pour le coucher ; réglable dans l'Espace Parents (Inc-4).
-  static const defaultRate = .45;
-  static const slowRate = .38;
+  /// Vitesse posée pour le coucher (0,5 est la vitesse normale du téléphone) ; « lente » dans l'Espace
+  /// Parents. Réglées à l'écoute le 20/11/2026 : la vitesse normale était trop rapide pour un enfant.
+  static const defaultRate = .38;
+  static const slowRate = .32;
+
+  /// Voix légèrement plus grave que d'habitude : plus douce à l'oreille.
+  static const _pitch = .95;
+
+  /// Silence entre deux paragraphes, et après le titre : l'histoire respire.
+  static const _pause = Duration(milliseconds: 900);
 
   /// Le plugin ne signale pas toujours un échec de synthèse : au-delà de ce délai, on abandonne (R7).
   static const _synthesisTimeout = Duration(seconds: 45);
@@ -31,27 +38,38 @@ class ListeningRepository {
     return await isInstalled == true;
   }
 
-  /// Synthétise le texte dans un fichier local avec la voix du téléphone (ADR-013), morceau par morceau
-  /// au-delà de la limite d'Android, puis réassemblé en un seul fichier.
-  Future<String> standardAudioFile(String text, {double rate = defaultRate}) async {
+  /// Synthétise l'histoire dans un fichier local avec la voix du téléphone (ADR-013) : le titre puis
+  /// chaque paragraphe à part, réassemblés avec un silence entre eux.
+  Future<String> standardAudioFile(List<String> passages, {double rate = defaultRate}) async {
     final directory = await getTemporaryDirectory();
     // Un nom par histoire : une synthèse abandonnée n'écrase jamais celle de l'histoire suivante.
-    final fileName = 'histoire-${text.hashCode.toUnsigned(32)}';
+    final fileName = 'histoire-${Object.hashAll(passages).toUnsigned(32)}';
     _removeOtherAudio(directory, keep: fileName);
     final name = '${directory.path}/$fileName';
-    await _tts.setLanguage(_language);
-    await _tts.setSpeechRate(rate);
-    await _tts.awaitSynthCompletion(true);
+    await _prepareVoice(rate);
     final parts = <String>[];
-    for (final (index, chunk) in splitForSpeech(text).indexed) {
-      parts.add('$name-$index.wav');
-      await _synthesize(chunk, parts.last);
+    for (final passage in passages) {
+      // Un paragraphe dépasse rarement la limite d'Android ; sinon il est coupé entre deux phrases.
+      for (final chunk in splitForSpeech(passage)) {
+        parts.add('$name-${parts.length}.wav');
+        await _synthesize(chunk, parts.last);
+      }
     }
-    if (parts.length == 1) return parts.single;
     final story = '$name.wav';
-    await File(story).writeAsBytes(concatenateWav([for (final part in parts) await File(part).readAsBytes()]));
+    final audio = concatenateWav([for (final part in parts) await File(part).readAsBytes()], pause: _pause);
+    await File(story).writeAsBytes(audio);
     await Future.wait(parts.map((part) => File(part).delete()));
     return story;
+  }
+
+  /// La meilleure voix française du téléphone, à la vitesse et au ton du coucher.
+  Future<void> _prepareVoice(double rate) async {
+    await _tts.setLanguage(_language);
+    final voice = bestFrenchVoice(await _tts.getVoices as List<Object?>? ?? const []);
+    if (voice != null) await _tts.setVoice(voice);
+    await _tts.setSpeechRate(rate);
+    await _tts.setPitch(_pitch);
+    await _tts.awaitSynthCompletion(true);
   }
 
   /// Arrête une synthèse en cours : l'enfant a quitté l'histoire.
@@ -91,3 +109,22 @@ class ListeningRepository {
 }
 
 final listeningRepositoryProvider = Provider((ref) => ListeningRepository(Supabase.instance.client, FlutterTts()));
+
+const _qualityRank = ['very high', 'premium', 'high', 'enhanced', 'normal', 'default'];
+
+/// Meilleure voix française installée et utilisable hors connexion (France d'abord, puis la plus
+/// haute qualité) : la qualité du téléphone compte beaucoup pour une lecture douce (R7).
+Map<String, String>? bestFrenchVoice(List<Object?> voices) {
+  final french = [
+    for (final voice in voices)
+      if (voice is Map && '${voice['locale']}'.toLowerCase().startsWith('fr') && voice['network_required'] != '1')
+        (name: '${voice['name']}', locale: '${voice['locale']}', quality: '${voice['quality']}'),
+  ];
+  int rank(({String name, String locale, String quality}) voice) {
+    final quality = _qualityRank.indexOf(voice.quality);
+    return (voice.locale.toLowerCase() == 'fr-fr' ? 0 : 10) + (quality < 0 ? _qualityRank.length : quality);
+  }
+
+  french.sort((a, b) => rank(a) - rank(b));
+  return french.isEmpty ? null : {'name': french.first.name, 'locale': french.first.locale};
+}

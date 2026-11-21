@@ -5,8 +5,8 @@
 
 ## Snapshot
 
-- **Phase courante** : 5 — Qualité et performance terminée ; prochaine phase : 6 — Publication
-- **Dernière mise à jour** : 20/11/2026
+- **Phase courante** : 6 — Publication (Android), en cours
+- **Dernière mise à jour** : 21/11/2026
 - **Santé** : 🟢 OK
 - **Prochaine action** : phase 6 (publication, Android d'abord) ; elle dépend de tes comptes
   (Play Console, Apple, RevenueCat, SMTP, Google Cloud), voir `docs/manual-tasks.md`
@@ -35,7 +35,7 @@
 | 3 — Architecture & design   | ✅ fait | `docs/architecture.md`, `docs/system-design.md`, `docs/data-model.md`, `docs/design/design-system.md`, `docs/design/flows.md` |
 | 4 — Implémentation          | 🔄 en cours | Inc-0 ✅ · Inc-1 ✅ (J1) · Inc-2 ✅ · Inc-3 ✅ · Inc-4 ✅ (J2) · Inc-5 ✅ · Inc-6 ✅ · Inc-7 ✅ · Inc-8 ✅ |
 | 5 — Qualité & performance   | ✅ fait | `docs/security.md`, `docs/performance.md`, `docs/qa/test-plan.md`, `docs/qa/load-report.md` ; reste la mesure sur un vrai téléphone |
-| 6 — Publication (stores)    | ⬜ à faire | |
+| 6 — Publication (stores)    | 🔄 en cours | Android : fiche Play prête ; reste paquet, achats, test fermé 14 j |
 | 7 — Documentation           | ⬜ à faire | |
 | 8 — Maintenance             | ⬜ à faire | |
 
@@ -76,6 +76,25 @@ Risques et chemin critique : `docs/risks.md`.
 
 ## Journal de session (résumé court, le plus récent en haut)
 
+- 21/11/2026 — Phase 6 lancée (Android).
+  - **Connexion Google** configurée (Cloud `histoires-du-soir` sur lionelkelenix@gmail.com, écran
+    publié) et activée dans Supabase local et production.
+  - **Pages légales** en ligne : https://kelenix.github.io/histoires-du-soir-site/ (ADR-041).
+  - **Clé d'envoi Android** générée ; paquet `app-release.aab` 1.0.0 (1) signé.
+  - **Play Console** (Kelenix Tech) : app créée, fiche complète (textes, icône, bannière, 6 captures),
+    catégorie, contact, confidentialité, publicités, classification PEGI 3 ; sécurité des données en
+    brouillon (attend le public cible, qui attend l'accès réviseur).
+  - Code e-mail masqué en production (ADR-040). 108 tests verts, analyse sans remarque.
+- 20/11/2026 — Retours de l'essai sur téléphone.
+  - **Voix du téléphone** (ADR-039) : plus lente, ton plus doux, meilleure voix française
+    installée, 0,9 s de pause entre les paragraphes. Sur émulateur, une histoire de 2 minutes dure
+    2:19 au lieu de 2:03, et la lecture démarre en 6 s.
+  - **Bande noire en bas** (barre de navigation, Android 14 et antérieurs) : le fond nuit passe
+    désormais sous les barres du système.
+  - **Halo derrière les tuiles et le bouton principal** retiré, comme dans le kit.
+  - **Connexion Google des parents** codée (ADR-038), en attente des ID client Google (tâche
+    manuelle détaillée).
+  - Preuves : 108 tests Flutter verts, analyse sans remarque.
 - 20/11/2026 — **Production mise à jour** : migrations Inc-7, Inc-8 et phase 5, et les 4 fonctions
   serveur (dont `synthesize-voice`).
   - **Contrôles** :

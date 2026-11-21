@@ -4,5 +4,7 @@
   "SUPPORT_EMAIL": "adresse du support (vide = bouton masqué)",
   "LEGAL_URL": "page des informations légales (vide = entrée masquée)",
   "REVENUECAT_ANDROID_KEY": "clé publique RevenueCat Android goog_… (vide = offres indisponibles)",
-  "REVENUECAT_IOS_KEY": "clé publique RevenueCat iOS appl_…"
+  "REVENUECAT_IOS_KEY": "clé publique RevenueCat iOS appl_…",
+  "GOOGLE_WEB_CLIENT_ID": "identifiant client OAuth « Application Web » de Google, …apps.googleusercontent.com (vide = bouton masqué)",
+  "EMAIL_CODE_ENABLED": "false tant que la production n'a pas d'envoi d'e-mails (SMTP)"
 }

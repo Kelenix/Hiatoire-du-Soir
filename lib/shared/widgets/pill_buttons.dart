@@ -17,10 +17,7 @@ class MagicButton extends StatelessWidget {
     return Opacity(
       opacity: onPressed == null ? .4 : 1,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: AppGradients.magic,
-          borderRadius: BorderRadius.circular(_height),
-        ),
+        decoration: BoxDecoration(gradient: AppGradients.magic, borderRadius: BorderRadius.circular(_height)),
         child: _PillContent(label: label, icon: icon, onPressed: onPressed, iconColor: Colors.white),
       ),
     );

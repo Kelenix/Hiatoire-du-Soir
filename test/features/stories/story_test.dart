@@ -22,7 +22,6 @@ void main() {
     expect(story.durationMin, 2);
     expect(story.listensCount, 1);
     expect(story.isFavorite, isTrue);
-    expect(story.spokenText, startsWith('Le renard et l’étoile.\n\nIl était une fois…'));
   });
 
   test('le prénom, gardé à part par le serveur, est remis dans le texte avec l’élision (US-32)', () {
