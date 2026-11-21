@@ -85,6 +85,13 @@ Risques et chemin critique : `docs/risks.md`.
     catégorie, contact, confidentialité, publicités, classification PEGI 3 ; sécurité des données en
     brouillon (attend le public cible, qui attend l'accès réviseur).
   - Code e-mail masqué en production (ADR-040). 108 tests verts, analyse sans remarque.
+  - Paquet 1.0.0 (1) publié en **test interne** ; empreinte de signature Play ajoutée à la connexion
+    Google ; **abonnement et 5 produits** créés et actifs ; compte de service RevenueCat prêt.
+    Puis : RevenueCat configuré (clé JSON, notifications temps réel), codes promo réviseur, vidéo
+    du service de lecture, public cible 0-8 ans (programme Famille), sécurité des données validée ;
+    **test fermé 1.0.0 (2) et les 14 modifications envoyés à l'examen de Google**.
+    Reste : réponse de Google (≈ 7 jours), secret du webhook RevenueCat, 12 testeurs pendant
+    14 jours, statut de commerçant, puis demande d'accès à la production.
 - 20/11/2026 — Retours de l'essai sur téléphone.
   - **Voix du téléphone** (ADR-039) : plus lente, ton plus doux, meilleure voix française
     installée, 0,9 s de pause entre les paragraphes. Sur émulateur, une histoire de 2 minutes dure

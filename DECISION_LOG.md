@@ -22,6 +22,13 @@
     partage, détail dans `docs/store/fiche-play-store.md`.
   - Catégorie : Livres et références. Visuels IA (mascotte) non étiquetés : illustrations, pas de
     contenu réaliste trompeur.
+  - Public cible déclaré : **0-5 ans et 6-8 ans** (Play impose des tranches consécutives ; 3-8 ans
+    n'existe pas). Déclaration de conformité COPPA/RGPD cochée à la demande de l'utilisateur ;
+    engagement « Norme per le famiglie » affiché dans la sécurité des données.
+  - Accès du réviseur Google au Premium : codes promo à usage unique (30 jours), pas de compte de
+    démonstration à mot de passe.
+  - Test fermé (« Test chiusi - Alpha », 179 pays) envoyé à l'examen avec toutes les déclarations le
+    21/11/2026 ; la production attend 12 testeurs inscrits 14 jours (compte personnel).
 - **Alternatives écartées** : Google Sites (domaine non autorisable pour l'écran de connexion) ;
   fonction Supabase (HTML non servi) ; VPS sans domaine (pas de HTTPS).
 - **Impact** : légal / métier (fort) — relecture juridique des pages recommandée.

@@ -112,17 +112,51 @@
 
 Compte développeur : **Kelenix Tech** (lionel@kelenix.com, compte personnel), app « Histoires du Soir »
 (`fr.histoiresdusoir.app`) créée le 21/11/2026. Fait par moi : fiche, catégorie, contact, politique de
-confidentialité, publicités (non), classification (PEGI 3), sécurité des données (brouillon).
+confidentialité, publicités (non), classification (PEGI 3), public cible (0-8 ans, programme Famille),
+sécurité des données (validée). **Tout est envoyé à l'examen de Google le 21/11/2026** (14 modifications,
+dont la release de test fermé) : réponse sous 7 jours environ, par e-mail et dans la Play Console.
 
-- [ ] **Glisser le paquet** `build/app/outputs/bundle/release/app-release.aab` dans la release de test
-      interne ouverte dans Chrome (55 Mo : trop gros pour mon outil d'envoi, limité à 10 Mo).
-- [ ] **Profil de paiement (marchand)** du compte Kelenix, s'il n'existe pas : coordonnées bancaires,
-      obligatoire pour vendre l'abonnement et les packs.
+- [x] **Paquet 1.0.0 (1)** envoyé et publié en test interne le 21/11/2026 (14,4 Mo au téléchargement).
+- [x] **Profil de paiement** : existant (les abonnements ont pu être créés).
+- [x] **Produits Play** créés et actifs le 21/11/2026 (prix TTC France) :
+      - abonnement `premium` : formules `mensuel` 5,99 € et `annuel` 34,99 €, chacune avec l'offre
+        `essai-7-jours` (nouveaux abonnés) ;
+      - produits à l'unité (option d'achat `achat`) : `pack_aventures_10` 2,99 €, `pack_noel_10` 3,99 €,
+        `histoire_sur_mesure_1` 1,99 €, `pack_famille_30` 9,99 €, `pack_voix` 1,99 €.
+- [x] **Compte de service** `revenuecat@histoires-du-soir.iam.gserviceaccount.com` (projet Cloud
+      `histoires-du-soir`, rôles Pub/Sub Admin et Monitoring Viewer, API Play Developer, Reporting et
+      Pub/Sub activées), invité dans la Play Console avec 4 droits sur cette app seulement.
+- [x] **Clé JSON du compte de service** importée dans RevenueCat (« Valid credentials », 21/11/2026) ;
+      notifications Google en temps réel reliées (topic `projects/histoires-du-soir/topics/Play-Store-Notifications`,
+      test reçu). Ancienne consigne : Cloud console → IAM → Comptes de
+      service → revenuecat → Clés → Ajouter une clé → JSON ; puis l'importer dans RevenueCat (Play Store
+      → Service Account credentials). Ne pas la mettre dans le dépôt.
 - [ ] **Statut de commerçant (UE)** avant février 2027 : bannière « Dichiara il tuo stato di
       commerciante ». Si tu vends (abonnements), tu es commerçant : Google affiche alors adresse,
       téléphone et e-mail publics. Décision et saisie personnelles.
-- [ ] **RevenueCat** : compte (créé par toi, mot de passe), puis j'y fais la configuration ; la clé
-      JSON du compte de service Google Play et le secret du webhook se collent par toi.
-- [ ] **Test fermé obligatoire** (compte personnel) : 12 testeurs inscrits pendant 14 jours d'affilée
-      avant de demander la production. Tes listes existantes (« New Update Test », 46 ; « Test 5 »,
-      43…) peuvent servir ; dis-moi laquelle.
+- [x] **RevenueCat** (21/11/2026) : projet « Histoires du Soir », app Play `fr.histoiresdusoir.app`,
+      7 produits, droit `premium` (formules mensuelle et annuelle), offre `default` (paquets
+      `$rc_monthly`, `$rc_annual`), webhook « Supabase production » vers `purchases-webhook`. Clé
+      publique Android dans `env/prod.json`.
+- [ ] **Secret du webhook RevenueCat** (toi seul) : RevenueCat → Integrations → Webhooks → Supabase
+      production → « Authorization header value » = `Bearer ` suivi de la valeur de
+      `REVENUECAT_WEBHOOK_SECRET` (fichier `supabase/functions/.env.production`), puis Save.
+- [x] **Codes promo réviseur** (21/11/2026) : promotion « Revision Google - Premium », 5 codes à usage
+      unique, 30 jours de Premium, valables jusqu'au 21/02/2027 (`Téléchargements/promotion_codes.csv`).
+      Deux codes donnés au réviseur dans « Accès à l'app » (rubrique enregistrée).
+- [x] **Public cible** (21/11/2026, à ta demande) : 0-5 ans et 6-8 ans, déclaration de conformité
+      aux lois sur les enfants (COPPA, RGPD) cochée ; l'app entre dans le programme **Famille** ; non
+      éligible « Approuvée par les enseignants ». Sécurité des données : engagement Famille affiché.
+      Relecture juridique conseillée ; pour réduire le risque COPPA, la production pourra viser la
+      France et les pays francophones seulement.
+- [x] **Test fermé configuré** (21/11/2026) : canal « Test chiusi - Alpha », liste « Histoires du Soir -
+      testeurs » (djouakalionel4@gmail.com), 179 pays, retours à lionelkelenix@gmail.com.
+- [x] **Paquet 1.0.0 (2)** en test fermé, **envoyé à l'examen de Google** le 21/11/2026.
+- [ ] **Suivre l'examen Google** (toi) : e-mail de Google sur lionel@kelenix.com ; en cas de refus, me
+      transmettre le motif. Une fois accepté, le test fermé démarre pour les testeurs inscrits.
+- [x] **Déclarations Play** faites : identifiant publicitaire (non), apps gouvernementales (non), fonctions
+      financières (aucune), santé (aucune), service de premier plan « lecture multimédia » avec vidéo
+      (`site/demo-ecoute.mp4`, en ligne sur le site).
+- [ ] **Ajouter tes autres testeurs** (toi) : Play Console → Test chiusi - Alpha → Tester → liste
+      « Histoires du Soir - testeurs ». Il en faut au moins 12, inscrits 14 jours d'affilée, avant de
+      demander la production.

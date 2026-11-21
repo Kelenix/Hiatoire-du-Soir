@@ -1,7 +1,7 @@
 name: histoires_du_soir
 description: "Histoires du Soir : des histoires du soir personnalisées pour les enfants."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.11.5
